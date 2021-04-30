@@ -8,6 +8,8 @@ module.exports = function(router, database) {
     user.password = bcrypt.hashSync(user.password, 12);
     database.addUser(user)
     .then(user => {
+      console.log('user'+user)
+      console.dir(user)
       if (!user) {
         res.send({error: "error"});
         return;
