@@ -22,7 +22,7 @@ const getUserWithEmail = function(email) {
       `select * from users where users.email = $1`,
       [`${email}`])
     .then((result) => {
-      return result.rows
+      return  Promise.resolve(result.rows[0])
      })
     .catch((err) => {
       null;
@@ -41,7 +41,7 @@ const getUserWithId = function(id) {
       `select * from users where users.id = $1`,
       [`${id}`])
     .then((result) => {
-      return result.rows
+      return  Promise.resolve(result.rows[0])
      })
     .catch((err) => {
       null;
@@ -80,7 +80,22 @@ exports.addUser = addUser;
  * @return {Promise<[{}]>} A promise to the reservations.
  */
 const getAllReservations = function(guest_id, limit = 10) {
-  return getAllProperties(null, 2);
+  // return getAllProperties(null, 2);
+  return pool
+    .query(
+      `select * 
+      from properties 
+      JOIN reservations 
+      ON properties.id = property_id 
+      where guest_id = $1
+      LIMIT $2`,
+      [`${guest_id}`,limit])
+    .then((result) => {
+      return result.rows;
+     })
+    .catch((err) => {
+      console.log(err);
+    });
 }
 exports.getAllReservations = getAllReservations;
 
@@ -99,10 +114,10 @@ const getAllProperties = (options, limit = 10) => {
       `select * from properties limit $1`,
       [limit])
     .then((result) => {
-      console.log(result.rows)
+      // console.log(result.rows)
     })
     .catch((err) => {
-      console.log(err.message);
+      // console.log(err.message);
     });
   };
 exports.getAllProperties = getAllProperties;
